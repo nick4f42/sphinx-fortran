@@ -504,10 +504,13 @@ class F90toRst(object):
             src = self.get_src(block)
         blocktype = block['block'].lower()
         blockname = block['name'].lower()
-        ftypes = r'(?:(?:%s).*\s+)?' % fortrantypes if blocktype == 'function' else ''
+        if blocktype == 'function':
+            prefix = r'(?:(?:%s|elemental|impure|module|non_recursive|pure|recursive)\s+)*' % fortrantypes
+        else:
+            prefix = ''
         rstart = re.compile(
             r"^\s*%s%s\s+%s\b.*$" %
-            (ftypes, blocktype, blockname), re.I).match
+            (prefix, blocktype, blockname), re.I).match
         rend = re.compile(r"^\s*end\s+%s\b.*$" % blocktype, re.I).match
         if isinstance(stopmatch, str):
             stopmatch = re.compile(stopmatch).match
